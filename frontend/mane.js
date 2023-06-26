@@ -288,7 +288,7 @@ function renderOneClient(client) {
         $inputLastnameModalChange.value = client.lastName;
         let $modalChangeWindowId = document.querySelector('.modal-window__id');
         $modalChangeWindowId.textContent = 'ID:' + ' ' + client.id;
-        actionsModalChangeWindow(client);
+        
     })
 
     
@@ -625,11 +625,16 @@ function cleanModaChangelWindow() {
 /**********************************/
 
 /**********Кнопки для модального окна изменения клиента*************/
-function actionsModalChangeWindow(client) {
+function actionsModalChangeWindow() {
 
     $modalWindowExitModalChange.addEventListener('click', () => {
         $modalWindowModalChange.classList.remove('modal__change-window--active');
         $phoneSiteModalChange.classList.remove('site__change-phone--active');
+        let allContactBoxes = $modalWindowBoxModalChange.querySelectorAll('.contact__box');
+        allContactBoxes.forEach((el) => {
+            el.remove()
+        })
+        $btnAddContactModalChange.classList.remove("modal__change-window__block2--active");
     });
 
     $btnAddContactModalChange.addEventListener('click', () => {
@@ -670,12 +675,14 @@ function actionsModalChangeWindow(client) {
         let contactInput = $modalWindowBoxModalChange.querySelectorAll('.contact__input');
         for (let input of contactInput) {
             if (input.value == '') {
-                alert('Пустой контакт');
+                alert('Пустой контактт');
                 return;
             }
         }
 
-        let response = await fetch('http://localhost:3000/api/clients/' + client.id, {
+        let a = ev.target.parentNode.parentNode.querySelector("h3").textContent.slice(4);
+        
+        let response = await fetch('http://localhost:3000/api/clients/' + a, {
             method: 'PATCH',
             body: JSON.stringify({
                 name: $inputNameModalChange.value.trim(),
@@ -692,7 +699,7 @@ function actionsModalChangeWindow(client) {
         renderClients();
     })
 }
-
+actionsModalChangeWindow();
 
 /************************************/
 

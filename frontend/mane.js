@@ -36,12 +36,22 @@ const $inputSurname = document.querySelector('.modal-window__input-surname');
 const $inputLastname = document.querySelector('.modal-window__input-lastname');
 const $modalWindowBtnReset = document.querySelector('.modal-window__btn-reset');
 
+const $btnSortId = document.querySelector('.table__head-btn__id');
+const $btnSortFio = document.querySelector('.table__head-btn__fio');
+const $btnSortCreated = document.querySelector('.table__head-btn__created');
+const $btnSortChanged = document.querySelector('.table__head-btn__changed');
+
+const $headerSearch = document.querySelector('.header__search');
+
+let sortBooleanFlag = true;
+let sortTextFlag;
 /***********Функция генерации всех пользователей ***************/
 async function renderClients() {
     $tableBody.innerHTML = '';
     let data = await (getClients());
     let arrConverted = data;
-    for (const client of arrConverted) {
+
+    for (let client of arrConverted) {
         console.log(client);
         client.FIO = client.name + ' ' + client.surname + ' ' + client.lastName;
 
@@ -69,6 +79,9 @@ async function renderClients() {
         client.createdTime = createdClientDay + '.' + createdClientMonth + '.' + createdClientYear;
         client.createClientHoursAndMinutes = createdClientHours + ':' + createdClientMinutes;
 
+        client.dateAndTimeCreated = client.createdTime + ' ' + client.createClientHoursAndMinutes;
+
+
         let modifyUpdateTime = new Date(client.updatedAt);
         const updateClientYear = modifyUpdateTime.getFullYear();
         let updateClientMonth = String(modifyUpdateTime.getMonth() + 1);
@@ -91,9 +104,38 @@ async function renderClients() {
         client.updatedTime = updateClientDay + '.' + updateClientMonth + '.' + updateClientYear;
         client.updateClientHoursAndMinutes = updatedClientHours + ':' + updatedClientMinutes;
 
+        client.dateAndTimeUpdated = client.updatedTime + ' ' + client.updateClientHoursAndMinutes;
+    }
+
+    if ($headerSearch.value.trim() !== '') {
+        arrConverted = arrConverted.filter(item => item.FIO.toLowerCase().includes($headerSearch.value.toLowerCase())
+            || item.id.includes($headerSearch.value.toLowerCase())
+            || item.dateAndTimeCreated.includes($headerSearch.value.toLowerCase())
+            || item.dateAndTimeUpdated.includes($headerSearch.value.toLowerCase()));
+    }
+
+    arrConverted.sort((a, b) => {
+        if (sortBooleanFlag === true) {
+            if (a[sortTextFlag] > b[sortTextFlag]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        } else {
+            if (a[sortTextFlag] > b[sortTextFlag]) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    })
+
+    for (let client of arrConverted) {
         renderOneClient(client);
     }
+
 }
+
 /******************************/
 
 /*************Функция отрисовки одного клиента **************************/
@@ -288,10 +330,24 @@ function renderOneClient(client) {
         $inputLastnameModalChange.value = client.lastName;
         let $modalChangeWindowId = document.querySelector('.modal-window__id');
         $modalChangeWindowId.textContent = 'ID:' + ' ' + client.id;
-        
+        $modalWindowBtnSaveModalChange.dataset.id = `${client.id}`;
+
+
+        let allContactBoxes = document.querySelectorAll('.contact__box');
+        allContactBoxes.forEach((el) => {
+            el.remove()
+        })
+        if (client.contacts.length != 0) {
+            $btnAddContactModalChange.classList.remove("modal__change-window__block2--active");
+            contactsArrModalChange = 0;
+            client.contacts.forEach((item) => {
+                console.log(item);
+                addOneContactModalChange(item.type, item.value);
+            })
+        }
     })
 
-    
+
 }
 /**************************************/
 
@@ -366,11 +422,14 @@ function actionsModalWindow() {
 
         let data = await response.json();
         cleanModalWindow();
+        $modalWindow.classList.toggle('modal-window--active');
+        $phoneSite.classList.toggle('site-phone--active');
         let allContactBoxes = document.querySelectorAll('.contact__box');
         allContactBoxes.forEach((el) => {
             el.remove()
         })
         renderClients();
+        
     })
 }
 
@@ -541,7 +600,7 @@ const $inputLastnameModalChange = document.querySelector('.modal__change-window_
 const $modalWindowBtnResetModalChange = document.querySelector('.modal__change-window__btn-reset');
 
 /***********добавление контакта для пользователя в модальном окне изменения**************/
-function addOneContactModalChange() {
+function addOneContactModalChange(itemType, itemValue) {
     if (contactsArrModalChange >= 10) {
         return;
     }
@@ -583,6 +642,26 @@ function addOneContactModalChange() {
 
     $contactValueFifth.setAttribute('value', 'Другое');
     $contactValueFifth.textContent = 'Другое';
+
+    if (itemType !== null && itemValue !== null) {
+        if (itemType === 'Другое') {
+            $contactValueFifth.selected = true;
+        } else if (itemType === 'Email') {
+            $contactValueSecond.selected = true;
+        } else if (itemType === 'Facebook') {
+            $contactValueThird.selected = true;
+        } else if (itemType === 'VK') {
+            $contactValueFourth.selected = true;
+        } else {
+            $contactValueFirst.selected = true;
+        }
+        if (itemValue !== null) {
+            $contactInput.value = itemValue;
+        } else {
+            $contactInput.value = '';
+        }
+
+    }
 
     $contactBtnDelete.innerHTML = $ContentBtnDelete;
 
@@ -638,7 +717,7 @@ function actionsModalChangeWindow() {
     });
 
     $btnAddContactModalChange.addEventListener('click', () => {
-        addOneContactModalChange();
+        addOneContactModalChange('', '');
         contactsArrModalChange = contactsArrModalChange + 1;
         if (!$btnAddContactModalChange.classList.contains("modal__change-window__block2--active")) {
             $btnAddContactModalChange.classList.add("modal__change-window__block2--active");
@@ -659,6 +738,7 @@ function actionsModalChangeWindow() {
     })
     $modalWindowBtnSaveModalChange.addEventListener('click', async (ev) => {
         ev.preventDefault();
+
         if ($inputNameModalChange.value == '') {
             alert('Вы не ввели Имя');
             return;
@@ -680,9 +760,9 @@ function actionsModalChangeWindow() {
             }
         }
 
-        let a = ev.target.parentNode.parentNode.querySelector("h3").textContent.slice(4);
-        
-        let response = await fetch('http://localhost:3000/api/clients/' + a, {
+        let userId = $modalWindowBtnSaveModalChange.dataset.id;
+
+        let response = await fetch('http://localhost:3000/api/clients/' + userId, {
             method: 'PATCH',
             body: JSON.stringify({
                 name: $inputNameModalChange.value.trim(),
@@ -705,8 +785,42 @@ actionsModalChangeWindow();
 
 renderClients();
 
+$btnSortFio.addEventListener('click', () => {
+    sortTextFlag = 'name';
+    sortBooleanFlag = !sortBooleanFlag;
+    renderClients();
+});
 
+$btnSortId.addEventListener('click', () => {
+    sortTextFlag = 'id';
+    sortBooleanFlag = !sortBooleanFlag;
+    renderClients();
+});
 
+$btnSortCreated.addEventListener('click', () => {
+    sortTextFlag = 'createdTime';
+    sortBooleanFlag = !sortBooleanFlag;
+    renderClients();
+});
+
+$btnSortChanged.addEventListener('click', () => {
+    sortTextFlag = 'updatedTime';
+    sortBooleanFlag = !sortBooleanFlag;
+    renderClients();
+});
+
+let searchTimeout;
+$headerSearch.addEventListener('input', () => {
+    let searchFlag = true;
+    if (searchFlag == true) {
+        searchFlag = false;
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            renderClients();
+            searchFlag = true;
+        }, 300)
+    }
+})
 
 
 

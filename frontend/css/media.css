@@ -1,0 +1,36 @@
+@media (max-width: 980px) {
+    .table__th-change {
+        width: 22%;
+    }
+
+    .table__th-create {
+        width: 22.8%;
+    }
+
+    .table__th-contacts {
+        width: 22.4%;
+    }
+}
+
+@media (max-width: 920px) {
+    .tbody__td-date__span {
+        display: block;
+    }
+
+    .tbody__td-time__span {
+        display: block;
+    }
+
+    .tbody__td-modify__btn {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .delete__window-box {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+   
+}

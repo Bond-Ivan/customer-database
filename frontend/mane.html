@@ -6,9 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Система управления</title>
-    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="libs/bootstrap.min.css">
-    <link rel="stylesheet" href="mane.css">
+    <link rel="stylesheet" href="css/mane.css">
+    <link rel="stylesheet" href="css/media.css">
 </head>
 
 <body>
@@ -32,90 +33,94 @@
         <section class="clients">
             <div class="container__site">
                 <h1 class="title-reset clients__title">Клиенты</h1>
-                <table class="table">
-                    <thead class="table__head">
-                        <tr>
-                            <th style="padding-left: 20px;width: 8.7%;">
-                                <button class="btn-reset table__head-btn table__head-btn__id">ID<svg width="12" height="12"
-                                        viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_221_915)">
-                                            <path
-                                                d="M2 6L2.705 6.705L5.5 3.915L5.5 10L6.5 10L6.5 3.915L9.29 6.71L10 6L6 2L2 6Z"
-                                                fill="#9873FF" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_221_915">
-                                                <rect width="12" height="12" fill="white"
-                                                    transform="translate(12 12) rotate(-180)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </button>
-                            </th>
-                            <th style="width: 23.5%;">
-                                <button class="btn-reset table__head-btn table__head-btn__fio">Фамилия Имя Отчество<svg width="12"
-                                        height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_221_918)">
-                                            <path
-                                                d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
-                                                fill="#9873FF" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_221_918">
-                                                <rect width="12" height="12" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    <span class="table__head-span">А-Я</span>
-                                </button>
-                            </th>
-                            <th style="width: 15.8%;padding-right: 20px;">
-                                <button class="btn-reset table__head-btn table__head-btn__created">Дата и время создания<svg width="12"
-                                        height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g opacity="0.7" clip-path="url(#clip0_221_919)">
-                                            <path
-                                                d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
-                                                fill="#9873FF" />
-                                        </g>
-                                        arrConverted.sort((a, b) => (a.FIO > b.FIO) ? 1 : -1);
-                                        <defs>
-                                            <clipPath id="clip0_221_919">
-                                                <rect width="12" height="12" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </button>
-                            </th>
+                <div class="table__wrap">
+                    <table class="table">
+                        <thead class="table__head">
+                            <tr>
+                                <th class="table__th-id">
+                                    <button class="btn-reset table__head-btn table__head-btn__id">ID<svg width="12"
+                                            height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clip0_221_915)">
+                                                <path
+                                                    d="M2 6L2.705 6.705L5.5 3.915L5.5 10L6.5 10L6.5 3.915L9.29 6.71L10 6L6 2L2 6Z"
+                                                    fill="#9873FF" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_221_915">
+                                                    <rect width="12" height="12" fill="white"
+                                                        transform="translate(12 12) rotate(-180)" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </button>
+                                </th>
+                                <th class="table__th-fio">
+                                    <button class="btn-reset table__head-btn table__head-btn__fio">Фамилия Имя
+                                        Отчество<svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clip0_221_918)">
+                                                <path
+                                                    d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
+                                                    fill="#9873FF" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_221_918">
+                                                    <rect width="12" height="12" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                        <span class="table__head-span">А-Я</span>
+                                    </button>
+                                </th>
+                                <th class="table__th-create">
+                                    <button class="btn-reset table__head-btn table__head-btn__created">Дата и время
+                                        создания<svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.7" clip-path="url(#clip0_221_919)">
+                                                <path
+                                                    d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
+                                                    fill="#9873FF" />
+                                            </g>
+                                            arrConverted.sort((a, b) => (a.FIO > b.FIO) ? 1 : -1);
+                                            <defs>
+                                                <clipPath id="clip0_221_919">
+                                                    <rect width="12" height="12" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </button>
+                                </th>
+                                <th class="table__th-change">
+                                    <button class="btn-reset table__head-btn table__head-btn__changed">Последние
+                                        изменения<svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.7" clip-path="url(#clip0_221_920)">
+                                                <path
+                                                    d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
+                                                    fill="#9873FF" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_221_920">
+                                                    <rect width="12" height="12" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </button>
+                                </th>
+                                <th class="table__th-contacts">
+                                    <button class="btn-reset table__head-btn">Контакты</button>
+                                </th>
+                                <th>
+                                    <button class="btn-reset table__head-btn">Действия</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table__body">
 
-                            
-                            <th style="width: 15%;">
-                                <button class="btn-reset table__head-btn table__head-btn__changed">Последние изменения<svg width="12" height="12"
-                                        viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g opacity="0.7" clip-path="url(#clip0_221_920)">
-                                            <path
-                                                d="M10 6L9.295 5.295L6.5 8.085L6.5 2H5.5L5.5 8.085L2.71 5.29L2 6L6 10L10 6Z"
-                                                fill="#9873FF" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_221_920">
-                                                <rect width="12" height="12" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </button>
-                            </th>
-                            <th style="width: 15.4%;">
-                                <button class="btn-reset table__head-btn">Контакты</button>
-                            </th>
-                            <th>
-                                <button class="btn-reset table__head-btn">Действия</button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="table__body">
-
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <button class="btn-reset btn__add-user"><svg class="btn__add-user__svg" width="23" height="16"
                         viewBox="0 0 23 16" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -136,14 +141,22 @@
                                 d="M16.2332 1.73333L15.2665 0.766664L8.49985 7.53336L1.73318 0.766696L0.766515 1.73336L7.53318 8.50003L0.766542 15.2667L1.73321 16.2333L8.49985 9.46669L15.2665 16.2334L16.2332 15.2667L9.46651 8.50003L16.2332 1.73333Z" />
                         </svg>
                     </button>
-                    <form action="#">
-                        <input class="modal-window__input modal-window__input-name" type="text" placeholder="Фамилия">
-                        <hr class="modal-window__line">
-                        <input class="modal-window__input modal-window__input-surname" type="text" placeholder="Имя">
-                        <hr class="modal-window__line">
-                        <input class="modal-window__input modal-window__input-lastname" type="text"
-                            placeholder="Отчество">
-                        <hr class="modal-window__line modal-window__line-special">
+                    <form class="form__add-user" action="#">
+                        <div class="modal-window__box-input">
+                            <input class="modal-window__input modal-window__input-surname" type="text" placeholder="Фамилия"
+                                data-validate-field="surname">
+                            <hr class="modal-window__line">
+                        </div>
+                        <div class="modal-window__box-input">
+                            <input class="modal-window__input modal-window__input-name" type="text" placeholder="Имя"
+                                data-validate-field="name">
+                            <hr class="modal-window__line">
+                        </div>
+                        <div class="modal-window__box-input">
+                            <input class="modal-window__input modal-window__input-lastname" type="text"
+                                placeholder="Отчество" data-validate-field="lastname">
+                            <hr class="modal-window__line modal-window__line-special">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-window__bcg">
@@ -195,15 +208,21 @@
                         </svg>
                     </button>
                     <form action="#">
-                        <input class="modal-window__input modal__change-window__input-name" type="text"
-                            placeholder="Фамилия">
-                        <hr class="modal-window__line">
-                        <input class="modal-window__input modal__change-window__input-surname" type="text"
-                            placeholder="Имя">
-                        <hr class="modal-window__line">
-                        <input class="modal-window__input modal__change-window__input-lastname" type="text"
-                            placeholder="Отчество">
-                        <hr class="modal-window__line modal-window__line-special">
+                        <div class="modal-window__change-box__input">
+                            <input class="modal-window__input modal__change-window__input-name" type="text"
+                                placeholder="Фамилия">
+                            <hr class="modal-window__line">
+                        </div>
+                        <div class="modal-window__change-box__input">
+                            <input class="modal-window__input modal__change-window__input-surname" type="text"
+                                placeholder="Имя">
+                            <hr class="modal-window__line">
+                        </div>
+                        <div class="modal-window__change-box__input">
+                            <input class="modal-window__input modal__change-window__input-lastname" type="text"
+                                placeholder="Отчество">
+                            <hr class="modal-window__line modal-window__line-special">
+                        </div>
                     </form>
                 </div>
                 <div class="modal__change-window__bcg">
@@ -235,14 +254,17 @@
 
                 <div class="modal-window__btn-box">
                     <button class="btn-reset modal__change-window__btn-save">Сохранить</button>
-                    <button class="btn-reset modal__change-window__btn-reset">Отмена</button>
+                    <button class="btn-reset modal__change-window__btn-reset">Удалить клиента</button>
                 </div>
             </div>
         </div>
 
     </main>
 
+    <script defer src="libs/inputmask.min.js"></script>
     <script defer src="mane.js"></script>
+
+
 </body>
 
 </html>

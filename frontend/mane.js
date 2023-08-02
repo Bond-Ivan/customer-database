@@ -23,10 +23,13 @@ let contactsArrModalChange = 0;
 const $siteMane = document.querySelector('.mane');
 
 const $btnAddClient = document.querySelector('.btn__add-user');
+
+const $table = document.querySelector('.table');
 const $tableBody = document.querySelector('.table__body');
 const $modalWindow = document.querySelector('.modal-window');
 const $modalWindowExit = document.querySelector('.modal-window__btn-exit');
 const $modalWindowBtnSave = document.querySelector('.modal-window__btn-save');
+const $modalWindowBtnSaveSvg = document.querySelector('.modal-window__btn-save__svg');
 const $phoneSite = document.querySelector('.site-phone');
 const $btnAddContact = document.querySelector('.modal-window__btn-contact');
 const $modalWindowBox = document.querySelector('.modal-window__bcg');
@@ -49,17 +52,45 @@ let sortTextFlag;
 /***********Функция генерации всех пользователей ***************/
 async function renderClients() {
     $tableBody.innerHTML = '';
+
+    const $spinnerBlock = document.createElement('div');
+    $spinnerBlock.classList.add('spinner');
+    const $spinnerSvg = `<svg class='spinner__svg' width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_121_2401)">
+            <path d="M14.0002 50.0005C14.0002 69.8825 30.1182 86.0005 50.0002 86.0005C69.8822 86.0005 86.0002 69.8825 86.0002 50.0005C86.0002 30.1185 69.8823 14.0005 50.0003 14.0005C45.3513 14.0005 40.9082 14.8815 36.8282 16.4865" stroke="#9873FF" stroke-width="8" stroke-miterlimit="10" stroke-linecap="round" />
+        </g>
+        <defs>
+            <clipPath id="clip0_121_2401">
+                <rect width="100" height="100" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>`
+    $spinnerBlock.innerHTML = $spinnerSvg;
+    $table.after($spinnerBlock);
+
     let data = await (getClients());
+    console.log(data.length);
+    if (data.length === 0) {
+        $spinnerBlock.remove();
+        $btnAddClient.classList.add('btn__add-user--active');
+    }
+
+    
     let arrConverted = data;
 
     /************Подготовка к отрисовке***************/
     for (let client of arrConverted) {
-
-        client.FIO = client.name[0].toUpperCase() + client.name.substring(1) + ' '
-            + client.surname[0].toUpperCase() + client.surname.substring(1) + ' '
-            + client.lastName[0].toUpperCase() + client.lastName.substring(1);
-
-
+        
+        $spinnerBlock.remove();
+        $btnAddClient.classList.add('btn__add-user--active');
+        if ($inputLastname.value.trim() !== '') {
+            client.FIO = client.name[0].toUpperCase() + client.name.substring(1) + ' '
+                + client.surname[0].toUpperCase() + client.surname.substring(1) + ' '
+                + client.lastName[0].toUpperCase() + client.lastName.substring(1);
+        } else {
+            client.FIO = client.name[0].toUpperCase() + client.name.substring(1) + ' '
+                + client.surname[0].toUpperCase() + client.surname.substring(1);
+        }
 
         const modifyCreatedTime = new Date(client.createdAt);
         const createdClientYear = modifyCreatedTime.getFullYear();
@@ -138,6 +169,8 @@ async function renderClients() {
     for (let client of arrConverted) {
         renderOneClient(client);
     }
+
+    
 }
 
 $btnAddClient.addEventListener('click', () => {
@@ -325,7 +358,7 @@ function renderOneClient(client) {
 
     $tableBodyTdModifyAndDelete.append($tableBodyTdModifyButton);
     $tableBodyTdModifyAndDelete.append($tableBodyTdDeleteButton);
-    
+
     $tableBodyTdId.textContent = client.id.substring(7);
     $tableBodyTdFio.textContent = client.FIO;
 
@@ -355,7 +388,7 @@ function renderOneClient(client) {
             setTimeout(() => {
                 deleteWindow.$deleteWindowBodyPhone.remove();
             }, 300);
-
+            
         });
 
         deleteWindow.$deleteWindowBtnCancel.addEventListener('click', () => {
@@ -376,9 +409,8 @@ function renderOneClient(client) {
         let $modalChangeWindowId = document.querySelector('.modal-window__id');
         $modalChangeWindowId.textContent = 'ID:' + ' ' + client.id;
         $modalWindowBtnSaveModalChange.dataset.id = `${client.id}`;
-
         if (client.contacts.length != 0) {
-            $btnAddContactModalChange.classList.remove("modal__change-window__block2--active");
+            $btnAddContactModalChange.classList.add("modal__change-window__block2--active");
             $modalWindowBoxModalChange.classList.add('modal__change-window__bcg--active');
             contactsArrModalChange = 0;
             client.contacts.forEach((item) => {
@@ -395,7 +427,20 @@ function renderOneClient(client) {
 
 let name = true;
 let surname = true;
-let lastname = true;
+
+/**********Функция создания объекта пользователя для окна создания*************/
+function clientPreparation() {
+    let userObj = {
+        name: $inputName.value.trim(),
+        surname: $inputSurname.value.trim(),
+    }
+
+    if ($inputLastname.value.trim() !== '') {
+        userObj.lastName = $inputLastname.value.trim();
+    }
+    userObj.contacts = userContactsPreparation();
+    return userObj;
+}
 
 /*****************Кнопки для модального окна создания пользователя ********************/
 function actionsModalWindow() {
@@ -423,131 +468,121 @@ function actionsModalWindow() {
             modalWindowState();
             if ($inputName.nextElementSibling.tagName.toLowerCase() == 'h3') {
                 $inputName.nextSibling.remove();
-                name = true;
+
             }
             if ($inputSurname.nextElementSibling.tagName.toLowerCase() == 'h3') {
                 $inputSurname.nextSibling.remove();
-                surname = true;
-            }
-            if ($inputLastname.nextElementSibling.tagName.toLowerCase() == 'h3') {
-                $inputLastname.nextSibling.remove();
-                lastname = true;
+
             }
             return;
         }
 
-        let answer = confirm('Вы действительно хотите отменить все изменения?');
+        let answer = confirm('Вы действительно хотите отменить все изменения?'); Я
         if (answer == false) {
             return;
         } else {
             cleanModalWindow();
             $btnAddContact.classList.remove('modal-window__btn-contact--active');
         }
-
-        if ($inputName.nextElementSibling.tagName.toLowerCase() == 'h3') {
+        if ($inputName.nextElementSibling.tagName.toLowerCase() === 'h3') {
             $inputName.nextSibling.remove();
-            name = true;
         }
-        if ($inputSurname.nextElementSibling.tagName.toLowerCase() == 'h3') {
+        if ($inputSurname.nextElementSibling.tagName.toLowerCase() === 'h3') {
             $inputSurname.nextSibling.remove();
-            surname = true;
         }
-        if ($inputLastname.nextElementSibling.tagName.toLowerCase() == 'h3') {
-            $inputLastname.nextSibling.remove();
-            lastname = true;
-        }
+
     })
 
     $modalWindowBtnSave.addEventListener('click', async (ev) => {
         ev.preventDefault();
-        let contactInput = document.querySelectorAll('.contact__input');
-        if ($inputName.value == '' && name === true) {
-            createError($inputName);
-            name = false;
-        } else if ($inputName.value !== '') {
+        $modalWindowBtnSaveSvg.classList.add('modal-window__btn-save__svg--active');
+
+        let response = await fetch('http://localhost:3000/api/clients', {
+            method: 'POST',
+            body: JSON.stringify(clientPreparation()),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+
+        })
+
+        console.log(response.status);
+
+        if (response.status === 200 || response.status === 201) {
+            let data = await response.json();
+            $modalWindowBtnSaveSvg.classList.remove('modal-window__btn-save__svg--active');
+            cleanModalWindow();
+            modalWindowState();
+
+            if ($inputName.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputName.nextSibling.remove();
+            }
+
+            if ($inputSurname.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputSurname.nextSibling.remove();
+            }
+
+            renderClients();
+
+        } else {
+            $modalWindowBtnSaveSvg.classList.remove('modal-window__btn-save__svg--active');
             if ($inputName.nextElementSibling.tagName.toLowerCase() == 'h3') {
                 $inputName.nextSibling.remove();
             }
-            name = true;
-        }
 
-        if ($inputSurname.value == '' && surname === true) {
-            createError($inputSurname);
-            surname = false;
-        } else if ($inputSurname.value !== '') {
-            if ($inputSurname.nextElementSibling.tagName.toLowerCase() == 'h3') {
+            if ($inputSurname.nextElementSibling.tagName.toLowerCase() === 'h3') {
                 $inputSurname.nextSibling.remove();
             }
-            surname = true;
-        }
 
-        if ($inputLastname.value == '' && lastname === true) {
-            createError($inputLastname);
-            lastname = false;
-        } else if ($inputLastname.value !== '') {
-            if ($inputLastname.nextElementSibling.tagName.toLowerCase() == 'h3') {
-                $inputLastname.nextSibling.remove();
+            if ($inputName.value === '') {
+                createError($inputName);
             }
-            lastname = true;
-        }
 
-        for (let input of contactInput) {
-            if (input.value == '' && !input.hasAttribute('data-value', 'true')) {
-                input.dataset.value = 'true';
-                const $errorText = document.createElement('h3');
-                $errorText.classList.add('error__text-number');
-                $errorText.textContent = 'Вы не заполнили контакт';
-                input.after($errorText);
-            } else if (input.value !== '') {
-                if (input.nextElementSibling.tagName.toLowerCase() == 'h3') {
+            if ($inputSurname.value === '') {
+                createError($inputSurname);
+            }
+
+            let contactInput = document.querySelectorAll('.contact__input');
+            for (let input of contactInput) {
+                if (input.nextElementSibling.tagName.toLowerCase() === 'h3') {
                     input.nextElementSibling.remove();
                 }
-
-            }
-        }
-
-        if ($inputName.value !== '' && $inputSurname.value !== '' && $inputLastname.value !== '' && Array.prototype.slice.call(contactInput).every(input => input.value !== '')) {
-            let response = await fetch('http://localhost:3000/api/clients', {
-                method: 'POST',
-                body: JSON.stringify({
-                    name: $inputName.value.trim(),
-                    surname: $inputSurname.value.trim(),
-                    lastName: $inputLastname.value.trim(),
-                    contacts: userContactsPreparation(),
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
+                if (input.value === '') {
+                    const $errorText = document.createElement('h3');
+                    $errorText.classList.add('error__text-number');
+                    $errorText.textContent = 'Вы не заполнили контакт';
+                    input.after($errorText);
+                } else if (input.value !== '') {
+                    if (input.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                        input.nextElementSibling.remove();
+                    }
                 }
-            })
-
-            let data = await response.json();
-            cleanModalWindow();
-            modalWindowState();
-            renderClients();
+            }
         }
     })
 }
 
+
+/*********Функция изменения фона модального окна**************/
 function modalWindowState() {
     $modalWindow.classList.toggle('modal-window--active');
     $phoneSite.classList.toggle('site-phone--active');
 }
 
+/*********Функция изменения фона модального окна изменений***********/
 function modalWindowChangeState() {
     $modalWindowModalChange.classList.toggle('modal__change-window--active');
     $phoneSiteModalChange.classList.toggle('site__change-phone--active');
 }
 
-/*************Создание ошибки при пустом или недопустимом вводе**************/
+/*************Создание ошибки в окне добавления**************/
 function createError(element) {
     const $errorText = document.createElement('h3');
     $errorText.classList.add('error__text')
     if (element === $inputName) {
-        $errorText.textContent = 'Вы не ввели Фамилию';
-    } else if (element === $inputSurname) {
         $errorText.textContent = 'Вы не ввели Имя';
     } else {
-        $errorText.textContent = 'Вы не ввели Отчество';
+        $errorText.textContent = 'Вы не ввели Фамилию';
     }
     element.after($errorText);
 }
@@ -613,7 +648,7 @@ function addOneContact() {
     $contactSelect.appendChild($contactValueFourth);
     $contactSelect.appendChild($contactValueFifth);
 
-    $modalWindowBox.prepend($contactBox);
+    $btnAddContact.before($contactBox);
 
     $contactSelect.addEventListener('click', () => {
         $contactSelect.classList.toggle('contact__select--reverse');
@@ -625,7 +660,7 @@ function addOneContact() {
             $btnAddContact.classList.remove('modal-window__btn-contact--active');
         }
         $contactBox.remove();
-        if (contactsArr == 0) {
+        if (contactsArr === 0) {
             $btnAddContact.classList.remove("modal-window__block2--active");
             $modalWindowBox.classList.remove('modal-window__bcg--active');
         }
@@ -715,6 +750,7 @@ const $modalWindowModalChange = document.querySelector('.modal__change-window');
 const $phoneSiteModalChange = document.querySelector('.site__change-phone');
 const $modalWindowExitModalChange = document.querySelector('.modal__change-window__btn-exit');
 const $modalWindowBtnSaveModalChange = document.querySelector('.modal__change-window__btn-save');
+const $modalWindowBtnSaveSvgModalChange = document.querySelector('.modal__change-window__btn-save__svg');
 const $btnAddContactModalChange = document.querySelector('.modal__change-window__btn-contact');
 const $modalWindowBoxModalChange = document.querySelector('.modal__change-window__bcg');
 
@@ -798,7 +834,7 @@ function addOneContactModalChange(itemType, itemValue) {
     $contactSelect.appendChild($contactValueFourth);
     $contactSelect.appendChild($contactValueFifth);
 
-    $modalWindowBoxModalChange.prepend($contactBox);
+    $btnAddContactModalChange.before($contactBox);
 
     $contactBtnDelete.addEventListener('click', () => {
         contactsArrModalChange = contactsArrModalChange - 1;
@@ -807,7 +843,7 @@ function addOneContactModalChange(itemType, itemValue) {
         }
         $contactBox.remove();
 
-        if (contactsArrModalChange == 0) {
+        if (contactsArrModalChange === 0) {
             $modalWindowBoxModalChange.classList.remove('modal__change-window__bcg--active');
             $btnAddContactModalChange.classList.remove("modal__change-window__block2--active");
         }
@@ -820,10 +856,6 @@ function addOneContactModalChange(itemType, itemValue) {
     };
 }
 
-let nameChange = true;
-let surnameChange = true;
-let lastnameChange = true;
-
 /**********Кнопки для модального окна изменения клиента*************/
 function actionsModalChangeWindow() {
     $modalWindowExitModalChange.addEventListener('click', () => {
@@ -833,18 +865,14 @@ function actionsModalChangeWindow() {
         allContactBoxes.forEach((el) => {
             el.remove();
         });
-        if ($inputNameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
+        if ($inputNameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
             $inputNameModalChange.nextSibling.remove();
         }
-        nameChange = true;
-        if ($inputSurnameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
+
+        if ($inputSurnameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
             $inputSurnameModalChange.nextSibling.remove();
         }
-        surnameChange = true;
-        if ($inputLastnameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
-            $inputLastnameModalChange.nextSibling.remove();
-        }
-        lastnameChange = true;
+
         $modalWindowBoxModalChange.classList.remove('modal__change-window__bcg--active');
         $btnAddContactModalChange.classList.remove("modal__change-window__block2--active");
     });
@@ -869,7 +897,7 @@ function actionsModalChangeWindow() {
 
     $modalWindowBtnResetModalChange.addEventListener('click', async () => {
         let answer = confirm('Вы действительно хотите удалить контакт?');
-        if (answer == false) {
+        if (answer === false) {
             return;
         } else {
             modalWindowChangeState();
@@ -880,85 +908,97 @@ function actionsModalChangeWindow() {
 
     $modalWindowBtnSaveModalChange.addEventListener('click', async (ev) => {
         ev.preventDefault();
-        let contactInput = $modalWindowBoxModalChange.querySelectorAll('.contact__input');
+        let userId = $modalWindowBtnSaveModalChange.dataset.id; 
+        $modalWindowBtnSaveSvgModalChange.classList.add('modal__change-window__btn-save__svg--active');
 
-        if ($inputNameModalChange.value == '' && nameChange === true) {
-            createErrorChange($inputNameModalChange);
-            nameChange = false;
-        } else if ($inputNameModalChange.value !== '') {
-            if ($inputNameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
-                $inputNameModalChange.nextSibling.remove();
+        let response = await fetch('http://localhost:3000/api/clients/' + userId, {
+            method: 'PATCH',
+            body: JSON.stringify(
+                clientChangePreparation(),
+            ),
+            headers: {
+                'Content-Type': 'application/json'
             }
-            nameChange = true;
-        }
+        });
 
-        if ($inputSurnameModalChange.value == '' && surnameChange === true) {
-            createErrorChange($inputSurnameModalChange);
-            surnameChange = false;
-        } else if ($inputSurnameModalChange.value !== '') {
-            if ($inputSurnameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
-                $inputSurnameModalChange.nextSibling.remove();
-            }
-            surnameChange = true;
-        }
+        console.log(response.status);
 
-        if ($inputLastnameModalChange.value == '' && lastnameChange === true) {
-            createErrorChange($inputLastnameModalChange);
-            lastnameChange = false;
-        } else if ($inputLastnameModalChange.value !== '') {
-            if ($inputLastnameModalChange.nextElementSibling.tagName.toLowerCase() == 'h3') {
-                $inputLastnameModalChange.nextSibling.remove();
-            }
-            lastnameChange = true;
-        }
-
-        for (let input of contactInput) {
-            if (input.value == '' && !input.hasAttribute('data-value', 'true')) {
-                input.dataset.value = 'true';
-                const $errorText = document.createElement('h3');
-                $errorText.classList.add('error__text-change__number');
-                $errorText.textContent = 'Вы не заполнили контакт';
-                input.after($errorText);
-            } else if (input.value !== '') {
-                if (input.nextElementSibling.tagName.toLocaleLowerCase() == 'h3') {
-                    input.nextElementSibling.remove();
-                }
-            }
-        }
-
-        let userId = $modalWindowBtnSaveModalChange.dataset.id;
-        if ($inputNameModalChange.value !== '' && $inputSurnameModalChange.value !== '' && $inputLastnameModalChange.value !== '' && Array.prototype.slice.call(contactInput).every(input => input.value !== '')) {
-            let response = await fetch('http://localhost:3000/api/clients/' + userId, {
-                method: 'PATCH',
-                body: JSON.stringify({
-                    name: $inputNameModalChange.value.trim(),
-                    surname: $inputSurnameModalChange.value.trim(),
-                    lastName: $inputLastnameModalChange.value.trim(),
-                    contacts: userContactsPreparation(),
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+        if (response.status === 200 || response.status === 201) {
+            $modalWindowBtnSaveSvgModalChange.classList.remove('modal__change-window__btn-save__svg--active');
             $modalWindowBoxModalChange.querySelectorAll('.contact__box').forEach((el) => {
                 el.remove();
             });
+
+            if ($inputNameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputNameModalChange.nextSibling.remove();
+            }
+
+
+            if ($inputSurnameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputSurnameModalChange.nextSibling.remove();
+            }
+
+
             modalWindowChangeState();
             renderClients();
+        } else {
+            $modalWindowBtnSaveSvgModalChange.classList.remove('modal__change-window__btn-save__svg--active');
+            let contactInput = $modalWindowBoxModalChange.querySelectorAll('.contact__input');
+
+            if ($inputNameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputNameModalChange.nextSibling.remove();
+            }
+
+            if ($inputSurnameModalChange.nextElementSibling.tagName.toLowerCase() === 'h3') {
+                $inputSurnameModalChange.nextSibling.remove();
+            }
+
+            if ($inputNameModalChange.value === '') {
+                createErrorChange($inputNameModalChange);
+            }
+
+            if ($inputSurnameModalChange.value === '') {
+                createErrorChange($inputSurnameModalChange);
+            }
+
+            for (let input of contactInput) {
+                if (input.nextElementSibling.tagName.toLocaleLowerCase() === 'h3') {
+                    input.nextElementSibling.remove();
+                }
+                if (input.value === '') {
+                    const $errorText = document.createElement('h3');
+                    $errorText.classList.add('error__text-change__number');
+                    $errorText.textContent = 'Вы не заполнили контакт';
+                    input.after($errorText);
+                }
+            }
         }
     })
 }
+
+/**********Функция создания объекта клиента в окне изменения *******/
+function clientChangePreparation() {
+    let userObj = {
+        name: $inputNameModalChange.value.trim(),
+        surname: $inputSurnameModalChange.value.trim(),
+    }
+
+    if ($inputLastnameModalChange.value.trim() !== '') {
+        userObj.lastName = $inputLastnameModalChange.value.trim();
+    }
+    userObj.contacts = userContactsPreparation();
+    return userObj;
+}
 actionsModalChangeWindow();
 
+/*******Функция создания ошибки**************/
 function createErrorChange(element) {
     const $errorText = document.createElement('h3');
     $errorText.classList.add('error__text-change');
     if (element === $inputNameModalChange) {
         $errorText.textContent = 'Вы не ввели Фамилию';
-    } else if (element === $inputSurnameModalChange) {
-        $errorText.textContent = 'Вы не ввели Имя';
     } else {
-        $errorText.textContent = 'Вы не ввели Отчество';
+        $errorText.textContent = 'Вы не ввели Имя';
     }
     element.after($errorText);
 }
